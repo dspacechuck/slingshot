@@ -47,7 +47,7 @@
         let sling = Matter.Constraint.create({
             pointA: {x: 300, y: 600},
             bodyB: ball,
-            stiffness: 0.05
+            stiffness: 0.02
         });
 
         let stack = Matter.Composites.stack(1080, 200, 4, 4, 0, 0, (x, y) => {
@@ -64,8 +64,8 @@
         })
 
         Matter.Events.on(engine, 'afterUpdate', () => {
-            if (firing && Math.abs(ball.position.x - 300) < 20 && Math.abs(ball.position.y - 600) < 20) {
-                ball = Matter.Bodies.circle(300,600,20);
+            if (firing && Math.abs(ball.position.x - 300) < 40 && Math.abs(ball.position.y - 600) < 40) {
+                ball = Matter.Bodies.circle(300, 600, 30);
                 Matter.World.add(engine.world, ball);
                 sling.bodyB = ball;
                 firing = false;
