@@ -29,9 +29,9 @@
 
         console.log(render);
     
-        let ground = Matter.Bodies.rectangle(400, 600, 810, 60, { isStatic: true });
-        let boxA = Matter.Bodies.rectangle(400, 200, 80, 80);
-        let boxB = Matter.Bodies.rectangle(450, 50, 80, 80);
+        let ground = Matter.Bodies.rectangle(1200, 400, 300, 20, { isStatic: true });
+        // let boxA = Matter.Bodies.rectangle(400, 200, 80, 80);
+        // let boxB = Matter.Bodies.rectangle(450, 50, 80, 80);
 
         let mouse = Matter.Mouse.create(render.canvas);
         let mouseConstraint = Matter.MouseConstraint.create(engine, {
@@ -43,13 +43,37 @@
 
         render.mouse = mouse;
 
-        let stack = Matter.Composites.stack(200, 200, 4, 4, 0, 0, (x, y) => {
+        let ball = Matter.Bodies.circle(300, 600, 30);
+        let sling = Matter.Constraint.create({
+            pointA: {x: 300, y: 600},
+            bodyB: ball,
+            stiffness: 0.05
+        });
+
+        let stack = Matter.Composites.stack(1080, 200, 4, 4, 0, 0, (x, y) => {
             // return Matter.Bodies.rectangle(x, y, 80, 80);
-            const sides = Math.ceil(Math.random()*7 + 1);
-            return Matter.Bodies.polygon(x, y, sides, 80);
+            // const sides = Math.ceil(Math.random()*7 + 1);
+            return Matter.Bodies.polygon(x, y, 4, 20);
         })
 
-        Matter.World.add(engine.world, [boxA, boxB, ground, stack, mouseConstraint]);
+        let isFire = false;
+        Matter.Events.on(mouseConstraint, 'enddrag', (e) => {
+            if (e.body === ball) {
+                firing = true;
+            }
+        })
+
+        Matter.Events.on(engine, 'afterUpdate', () => {
+            if (firing && Math.abs(ball.position.x - 300) < 20 && Math.abs(ball.position.y - 600) < 20) {
+                ball = Matter.Bodies.circle(300,600,20);
+                Matter.World.add(engine.world, ball);
+                sling.bodyB = ball;
+                firing = false;
+            }
+        
+        });
+
+        Matter.World.add(engine.world, [ground, stack, mouseConstraint, ball, sling]);
         Matter.Runner.run(engine);
         Matter.Render.run(render);
 
