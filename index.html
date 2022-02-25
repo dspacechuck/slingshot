@@ -21,7 +21,8 @@
             options: {
                 width: 1600,
                 height: 800,
-                wireframes: false
+                wireframes: false,
+                showPerformance: true
             }
         });
 
@@ -50,13 +51,15 @@
             stiffness: 0.02
         });
 
-        let stack = Matter.Composites.stack(1080, 200, 4, 4, 0, 0, (x, y) => {
+        let stack = Matter.Composites.stack(1080, 200, 1, 4, 0, 0, (x, y) => {
             // return Matter.Bodies.rectangle(x, y, 80, 80);
             // const sides = Math.ceil(Math.random()*7 + 1);
-            return Matter.Bodies.polygon(x, y, 4, 20);
+            return Matter.Bodies.polygon(x, y, 4, 20, {
+                restitution: 1
+            });
         })
 
-        let isFire = false;
+        let firing = false;
         Matter.Events.on(mouseConstraint, 'enddrag', (e) => {
             if (e.body === ball) {
                 firing = true;
